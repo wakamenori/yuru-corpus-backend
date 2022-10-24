@@ -1,4 +1,4 @@
-FROM python:3.8
+FROM python:3.9
 
 RUN apt-get update -y && apt-get upgrade -y
 
@@ -24,7 +24,7 @@ COPY requirements.txt /app
 
 RUN python -m pip install --upgrade pip
 
-RUN pip install -r requirements.txt
+#RUN pip install -r requirements.txt
 
 EXPOSE 5000
 
