@@ -31,7 +31,7 @@ def main():
 def hello():
     if request.method == "GET":
         rh = ResponseHandler()
-        return rh.response_2xx(f"Hello!, Hello World!prod stage:{STAGE}")
+        return rh.response_2xx(f"Hello!, Hello World!!prod stage:{STAGE}")
     if request.method == "POST":
         rh = ResponseHandler()
         data = request.get_json()
