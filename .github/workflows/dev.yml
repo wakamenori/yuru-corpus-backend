@@ -61,9 +61,7 @@ jobs:
         with:
           node-version: 16.x
           cache: 'npm'
-      - run: npm install -g serverless
-      - run: npm install -g serverless-python-requirements
-      - run: npm install -g serverless-wsgi
+      - run: npm -g install
       - name: deploy api gateway
         if: contains(needs.test-python.outputs.changed-files, 'api-gateway/')
         run: |
