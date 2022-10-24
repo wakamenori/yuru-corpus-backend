@@ -1,0 +1,64 @@
+service: YuruCorpusApi
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+  region: ap-northeast-1
+  logs:
+    httpApi: true
+
+resources:
+  Resources:
+    Api:
+      Type: AWS::ApiGatewayV2::Api
+      Properties:
+        Name: YuruCorpusApi
+        ProtocolType: HTTP
+        CorsConfiguration:
+          AllowCredentials: true
+          AllowHeaders:
+            - "*"
+            - "Access-Control-Allow-Headers"
+            - "Access-Control-Allow-Methods"
+            - "Access-Control-Allow-Origin"
+            - Authorization
+            - Content-Type
+            - X-CSRF-TOKEN
+            - x-api-key
+          AllowMethods:
+            - OPTIONS
+            - GET
+            - POST
+            - PUT
+            - DELETE
+          AllowOrigins:
+            - http://localhost:3000
+            - https://oreore.stoplight.io
+          ExposeHeaders:
+            - "*"
+            - "Access-Control-Allow-Headers"
+            - "Access-Control-Allow-Methods"
+            - "Access-Control-Allow-Origin"
+          MaxAge: 300
+    GWDevStage:
+      Type: AWS::ApiGatewayV2::Stage
+      Properties:
+        ApiId: !Ref Api
+        StageName: dev
+        AutoDeploy: TRUE
+        StageVariables:
+          stage: dev
+    GWProdStage:
+      Type: AWS::ApiGatewayV2::Stage
+      Properties:
+        ApiId: !Ref Api
+        StageName: prod
+        AutoDeploy: TRUE
+        StageVariables:
+          stage: prod
+  Outputs:
+    apiGatewayHttpApiId:
+      Value:
+        Ref: Api
+      Export:
+        Name: YuruCorpusApiId

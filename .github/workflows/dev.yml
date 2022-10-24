@@ -1,0 +1,83 @@
+name: test and deploy to dev
+
+on:
+  push:
+    branches-ignore:
+      - 'main'
+
+jobs:
+  test-python:
+    runs-on: ubuntu-latest
+    outputs:
+      changed-files: ${{steps.changed-files.outputs.all_changed_and_modified_files}}
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 2
+      - name: Set up Python 3.8
+        uses: actions/setup-python@v2
+        with:
+          python-version: "3.8"
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install flake8 pytest
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+      - name: Lint with flake8
+        run: |
+          # stop the build if there are Python syntax errors or undefined names
+          flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+          # exit-zero treats all errors as warnings. The GitHub editor is 119 chars wide
+          flake8 . --count --exit-zero --max-complexity=10 --max-line-length=119 --statistics
+      - name: Test with pytest
+        run: |
+          array=($(ls | grep _api))
+          for apiDir in ${array[@]}; do
+              python -m pytest ${apiDir}
+          done
+      - name: Get changed files
+        id: changed-files
+        uses: tj-actions/changed-files@v16
+      - name: List all changed files
+        run: |
+          echo ${{ steps.changed-files.outputs.all_changed_and_modified_files }}
+          for file in ${{ steps.changed-files.outputs.all_changed_and_modified_files }}; do
+            echo "$file was changed"
+          done
+
+  deploy-services:
+    needs: test-python
+    runs-on: ubuntu-latest
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+    steps:
+      - uses: actions/checkout@v2
+      - name: Use Node.js 16.x
+        uses: actions/setup-node@v2
+        with:
+          node-version: 16.x
+          cache: 'npm'
+      - run: npm install -g serverless
+      - run: npm install -g serverless-python-requirements
+      - run: npm install -g serverless-wsgi
+      - name: deploy api gateway
+        if: contains(needs.test-python.outputs.changed-files, 'api-gateway/')
+        run: |
+          cd api-gateway
+          sls deploy --stage dev
+          cd ..
+      - name: deploy apis
+        run: |
+          lambdas=($(ls | grep _api))
+          echo ${{needs.test-python.outputs.changed-files}}
+          for lambda in ${lambdas[@]}; do
+            if [[ "${{needs.test-python.outputs.changed-files}}" =~ "$lambda" ]]; then
+              cd ${lambda}
+              sls deploy
+              cd ..
+            fi
+          done

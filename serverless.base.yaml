@@ -1,0 +1,84 @@
+frameworkVersion: '3'
+
+custom:
+  wsgi:
+    app: api.app
+  pythonRequirements:
+    dockerizePip: false
+
+provider:
+  name: aws
+  runtime: python3.8
+  region: ap-northeast-1
+  httpApi:
+    id:
+      'Fn::ImportValue': YuruCorpusApiId
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action:
+            - dynamodb:DescribeTable
+            - dynamodb:Query
+            - dynamodb:Scan
+            - dynamodb:GetItem
+            - dynamodb:PutItem
+            - dynamodb:UpdateItem
+            - dynamodb:DeleteItem
+          Resource: 'arn:aws:dynamodb:ap-northeast-1:*:*'
+
+resources:
+  Resources:
+    Route:
+      Type: AWS::ApiGatewayV2::Route
+      Properties:
+        ApiId:
+          'Fn::ImportValue': YuruCorpusApiId
+        RouteKey: !Sub
+          - "ANY /${path}/{proxy+}"
+          - path: ${self:service}
+        Target: !Sub
+          - integrations/#{Integration}
+          - Integration: !Ref Integration
+    Integration:
+      Type: "AWS::ApiGatewayV2::Integration"
+      Properties:
+        ApiId:
+          'Fn::ImportValue': YuruCorpusApiId
+        ConnectionType: "INTERNET"
+        IntegrationMethod: "ANY"
+        IntegrationType: "AWS_PROXY"
+        IntegrationUri:
+          Fn::Join:
+            - ""
+            - - "arn:aws:lambda:"
+              - ${aws:region}
+              - ":"
+              - ${aws:accountId}
+              - ":function:YuruCorpusApi-"
+              - ${self:service}
+              - "-${stageVariables.stage}"
+        TimeoutInMillis: 30000
+        PayloadFormatVersion: "2.0"
+    Permission:
+      Type: AWS::Lambda::Permission
+      Properties:
+        FunctionName:
+          "Fn::GetAtt": [ ApiLambdaFunction, Arn ]
+        Action: lambda:InvokeFunction
+        Principal: apigateway.amazonaws.com
+        SourceArn:
+          Fn::Join:
+            - ""
+            - - "arn:aws:execute-api:"
+              - ${aws:region}
+              - ":"
+              - ${aws:accountId}
+              - ":"
+              - 'Fn::ImportValue': YuruCorpusApiId
+              - /*/*/${self:service}/{proxy+}
+
+plugins:
+  - serverless-python-requirements
+  - serverless-cloudformation-sub-variables
+  - serverless-wsgi
