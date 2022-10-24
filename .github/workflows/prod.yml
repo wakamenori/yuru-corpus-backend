@@ -59,7 +59,10 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: 16
-      - run: npm install -g
+      - run: npm install -g serverless
+      - run: npm install -g serverless-python-requirements
+      - run: npm install -g serverless-wsgi
+      - run: npm install -g serverless-cloudformation-sub-variables
       - name: deploy api gateway
         if: contains(needs.test-python.outputs.changed-files, 'api-gateway/')
         run: |
