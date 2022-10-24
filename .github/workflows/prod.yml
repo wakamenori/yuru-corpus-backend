@@ -64,7 +64,7 @@ jobs:
         if: contains(needs.test-python.outputs.changed-files, 'api-gateway/')
         run: |
           cd api-gateway
-          sls deploy --stage prod
+          serverless deploy --stage prod
           cd ..
       - name: deploy apis
         run: |
@@ -73,7 +73,7 @@ jobs:
           for lambda in ${lambdas[@]}; do
             if [[ "${{needs.test-python.outputs.changed-files}}" =~ "$lambda" ]]; then
               cd ${lambda}
-              sls deploy --stage prod --config serverless.prod.yaml
+              serverless deploy --stage prod --config serverless.prod.yaml
               cd ..
             fi
           done
