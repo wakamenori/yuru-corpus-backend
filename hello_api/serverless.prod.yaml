@@ -1,4 +1,4 @@
-service: h${file(./serverless.yaml):service}
+service: ${file(./serverless.yaml):service}
 
 functions: ${file(./serverless.yaml):functions}
 
