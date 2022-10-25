@@ -20,7 +20,7 @@ BASE_PATH = os.environ.get("BASE_PATH", "hello")  # TODO: change base path
 def main():
     if request.method == "GET":
         rh = ResponseHandler()
-        return rh.response_2xx(f"Hello, World!prod stage:{STAGE}")
+        return rh.response_2xx(f"Hello, World! prod stage:{STAGE}")
     if request.method == "POST":
         rh = ResponseHandler()
         data = request.get_json()

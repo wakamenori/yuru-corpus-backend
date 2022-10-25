@@ -67,7 +67,7 @@ jobs:
         if: contains(needs.test-python.outputs.changed-files, 'api-gateway/')
         run: |
           cd api-gateway
-          sls deploy --stage dev
+          sls deploy --stage prod
           cd ..
       - name: deploy apis
         run: |
