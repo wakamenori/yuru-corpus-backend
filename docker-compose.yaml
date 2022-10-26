@@ -21,7 +21,7 @@ services:
     ports:
       - "8000:8000"
     volumes:
-      - db-data:/data
+      - yuru-db-data:/data
     command: -jar DynamoDBLocal.jar -sharedDb -dbPath /data
   dynamodb-admin:
     container_name: test_dynamodb-admin
@@ -34,4 +34,4 @@ services:
       - dynamodb-local
 
 volumes:
-  db-data:
+  yuru-db-data:
