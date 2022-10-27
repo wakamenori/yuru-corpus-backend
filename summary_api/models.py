@@ -34,9 +34,13 @@ class Database:
 class SummaryData(TypedDict):
     id: int
     title: str
-    publication_date: str
-    thumbnail_url: str
-    video_url: str
+    publicationDate: str
+    thumbnailUrl: str
+    videoUrl: str
+
+
+class NotFoundError(Exception):
+    pass
 
 
 class Model:
@@ -51,9 +55,23 @@ class Model:
         data = [{
             "id": int(summary["Id"]),
             "title": summary["Title"],
-            "publication_date": summary["PublicationDate"],
-            "thumbnail_url": summary["ThumbnailUrl"],
-            "video_url": summary["VideoUrl"],
+            "publicationDate": summary["PublicationDate"],
+            "thumbnailUrl": summary["ThumbnailUrl"],
+            "videoUrl": summary["VideoUrl"],
         } for summary in response["Items"]]
-        return sorted(data, key=lambda x: x["publication_date"], reverse=False)
+        return sorted(data, key=lambda x: x["publicationDate"], reverse=False)
 
+    def get_summary_by_episode(self, episode_id: int) -> SummaryData:
+        response = self.corpus_table.query(
+            KeyConditionExpression=Key("Type").eq("episode") & Key("Id").eq(str(episode_id)),
+        )
+        if len(response["Items"]) == 0:
+            raise NotFoundError("Episode not found")
+        summary = response["Items"][0]
+        return {
+            "id": int(summary["Id"]),
+            "title": summary["Title"],
+            "publicationDate": summary["PublicationDate"],
+            "thumbnailUrl": summary["ThumbnailUrl"],
+            "videoUrl": summary["VideoUrl"],
+        }
