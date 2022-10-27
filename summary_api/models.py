@@ -56,3 +56,4 @@ class Model:
             "video_url": summary["VideoUrl"],
         } for summary in response["Items"]]
         return sorted(data, key=lambda x: x["publication_date"], reverse=False)
+
