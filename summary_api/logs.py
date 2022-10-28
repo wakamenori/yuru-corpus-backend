@@ -42,7 +42,7 @@ logger.setLevel(logging.DEBUG)
 logger.propagate = False
 
 if IS_LOCAL is not None:
-    fh = logging.FileHandler("hello_api/logs/api.log")  # TODO: change dir name
+    fh = logging.FileHandler("summary_api/logs/api.log")
     fh.setLevel(logging.DEBUG)
     fh.setFormatter(json_formatter)
     logger.addHandler(fh)
@@ -51,6 +51,7 @@ else:
     sh.setLevel(logging.INFO)
     sh.setFormatter(json_formatter)
     logger.addHandler(sh)
+
 request_filter = ContextualFilter()
 logger.addFilter(request_filter)
 
