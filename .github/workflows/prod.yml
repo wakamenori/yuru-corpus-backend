@@ -72,7 +72,6 @@ jobs:
       - name: deploy apis
         run: |
           lambdas=($(ls | grep _api))
-          echo ${{needs.test-python.outputs.changed-files}}
           for lambda in ${lambdas[@]}; do
             if [[ "${{needs.test-python.outputs.changed-files}}" =~ "$lambda" ]]; then
               cd ${lambda}
