@@ -13,7 +13,10 @@ CORS(app, supports_credentials=True)
 RequestID(app)
 bp = flask.Blueprint("route", __name__)
 
-STAGE = os.environ.get("ENV", "dev")
+STAGE = os.environ.get("STAGE", "dev")
+if STAGE == "test":
+    STAGE = "dev"
+
 BASE_PATH = os.environ.get("BASE_PATH", "summary")
 
 
