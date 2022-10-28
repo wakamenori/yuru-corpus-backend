@@ -1,0 +1,18 @@
+service: morpheme
+
+frameworkVersion: ${file(../serverless.base.yaml):frameworkVersion}
+
+custom: ${file(../serverless.base.yaml):custom}
+
+provider: ${file(../serverless.base.yaml):provider}
+
+resources: ${file(../serverless.base.yaml):resources}
+
+functions:
+  api:
+    handler: wsgi_handler.handler
+    name: YuruCorpusApi-${self:service}-${opt:stage, 'dev'}
+    environment:
+      STAGE: ${opt:stage, 'dev'}
+
+plugins: ${file(../serverless.base.yaml):plugins}
