@@ -1,0 +1,15 @@
+service: ${file(./serverless.yaml):service}
+
+functions: ${file(./serverless.yaml):functions}
+
+frameworkVersion: ${file(../serverless.base.yaml):frameworkVersion}
+
+custom: ${file(../serverless.base.yaml):custom}
+
+provider: ${file(../serverless.base.yaml):provider}
+
+resources:
+  Resources:
+    Permission: ${file(../serverless.base.yaml):resources.Resources.Permission}
+
+plugins: ${file(../serverless.base.yaml):plugins}
