@@ -19,7 +19,8 @@ def test_get_summary_by_id(client):
         "publicationDate": "2021-03-11",
         "thumbnailUrl": "https://i.ytimg.com/vi/2YY9DT4uDh0/sddefault.jpg",
         "title": "「イルカも喋る」は大ウソ【言語学って何？】#1",
-        "videoUrl": "https://www.youtube.com/watch?v=2YY9DT4uDh0"
+        "videoUrl": "https://www.youtube.com/watch?v=2YY9DT4uDh0",
+        "analysed": True,
     }
 
 

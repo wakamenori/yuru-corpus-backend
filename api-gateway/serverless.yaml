@@ -15,7 +15,7 @@ resources:
         Name: YuruCorpusApi
         ProtocolType: HTTP
         CorsConfiguration:
-          AllowCredentials: true
+          AllowCredentials: false
           AllowHeaders:
             - "*"
             - "Access-Control-Allow-Headers"
@@ -34,6 +34,7 @@ resources:
           AllowOrigins:
             - http://localhost:3000
             - https://oreore.stoplight.io
+            - "*"
           ExposeHeaders:
             - "*"
             - "Access-Control-Allow-Headers"

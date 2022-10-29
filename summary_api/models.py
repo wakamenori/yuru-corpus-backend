@@ -1,5 +1,5 @@
 import os
-from typing import List, TypedDict
+from typing import List, TypedDict, Optional
 
 import boto3
 from boto3.dynamodb.conditions import Key
@@ -37,11 +37,25 @@ class SummaryData(TypedDict):
     publicationDate: str
     thumbnailUrl: str
     videoUrl: str
-
+    analysed: bool
 
 class NotFoundError(Exception):
     pass
 
+
+def convert_response_to_summary_data(response: dict) -> SummaryData:
+    if "Analysed" not in response.keys():
+        analysed = False
+    else:
+        analysed = response["Analysed"]
+    return {
+        "id": int(response["Id"]),
+        "title": response["Title"],
+        "publicationDate": response["PublicationDate"],
+        "thumbnailUrl": response["ThumbnailUrl"],
+        "videoUrl": response["VideoUrl"],
+        "analysed": analysed
+    }
 
 class Model:
     def __init__(self):
@@ -52,13 +66,7 @@ class Model:
         response = self.corpus_table.query(
             KeyConditionExpression=Key("Type").eq("episode"),
         )
-        data = [{
-            "id": int(summary["Id"]),
-            "title": summary["Title"],
-            "publicationDate": summary["PublicationDate"],
-            "thumbnailUrl": summary["ThumbnailUrl"],
-            "videoUrl": summary["VideoUrl"],
-        } for summary in response["Items"]]
+        data = [convert_response_to_summary_data(summary) for summary in response["Items"]]
         return sorted(data, key=lambda x: x["publicationDate"], reverse=False)
 
     def get_summary_by_episode(self, episode_id: int) -> SummaryData:
@@ -68,10 +76,4 @@ class Model:
         if len(response["Items"]) == 0:
             raise NotFoundError("Episode not found")
         summary = response["Items"][0]
-        return {
-            "id": int(summary["Id"]),
-            "title": summary["Title"],
-            "publicationDate": summary["PublicationDate"],
-            "thumbnailUrl": summary["ThumbnailUrl"],
-            "videoUrl": summary["VideoUrl"],
-        }
+        return convert_response_to_summary_data(summary)
