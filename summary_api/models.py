@@ -77,3 +77,4 @@ class Model:
             raise NotFoundError("Episode not found")
         summary = response["Items"][0]
         return convert_response_to_summary_data(summary)
+
