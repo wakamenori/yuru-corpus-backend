@@ -14,6 +14,9 @@ resources:
       Properties:
         Name: YuruCorpusApi
         ProtocolType: HTTP
+        Tags:
+          - Key: service
+            Value: YuruCorpus
         CorsConfiguration:
           AllowCredentials: false
           AllowHeaders:
