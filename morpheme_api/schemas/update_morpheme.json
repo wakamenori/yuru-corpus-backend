@@ -1,0 +1,25 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "title": "Morpheme",
+    "description": "",
+    "type": "object",
+    "properties": {
+        "timestamp": {
+            "type": "string",
+            "format": "time"
+        },
+        "speaker": {
+            "type": "string",
+            "minLength": 1
+        },
+        "token": {
+            "type": "string",
+            "minLength": 1
+        }
+    },
+    "required": [
+        "timestamp",
+        "speaker",
+        "token"
+    ]
+}
