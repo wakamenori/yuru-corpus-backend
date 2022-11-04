@@ -1,5 +1,5 @@
 import os
-from typing import List, TypedDict, Optional
+from typing import List, TypedDict
 
 import boto3
 from boto3.dynamodb.conditions import Key
@@ -31,50 +31,59 @@ class Database:
             raise ValueError("Invalid environment")
 
 
-class SummaryData(TypedDict):
+class SummaryResponse(TypedDict):
     id: int
     title: str
     publicationDate: str
     thumbnailUrl: str
     videoUrl: str
-    analysed: bool
+    isAnalyzed: bool
+    channel: str
+
+
+class SummaryData(TypedDict):
+    Id: str
+    Title: str
+    PublicationDate: str
+    ThumbnailUrl: str
+    VideoUrl: str
+    IsAnalyzed: bool
+    Channel: str
+
 
 class NotFoundError(Exception):
     pass
 
 
-def convert_response_to_summary_data(response: dict) -> SummaryData:
-    if "Analysed" not in response.keys():
-        analysed = False
-    else:
-        analysed = response["Analysed"]
+def convert_response_to_summary_data(response: SummaryData) -> SummaryResponse:
     return {
         "id": int(response["Id"]),
         "title": response["Title"],
         "publicationDate": response["PublicationDate"],
         "thumbnailUrl": response["ThumbnailUrl"],
         "videoUrl": response["VideoUrl"],
-        "analysed": analysed
+        "isAnalyzed": response["IsAnalyzed"],
+        "channel": response["Channel"],
     }
+
 
 class Model:
     def __init__(self):
         db = Database()
         self.corpus_table = db.corpus_table
 
-    def get_all_summary(self) -> List[SummaryData]:
+    def get_all_summary(self) -> List[SummaryResponse]:
         response = self.corpus_table.query(
-            KeyConditionExpression=Key("Type").eq("episode"),
+            KeyConditionExpression=Key("Type").eq("Episode"),
         )
         data = [convert_response_to_summary_data(summary) for summary in response["Items"]]
         return sorted(data, key=lambda x: x["publicationDate"], reverse=False)
 
-    def get_summary_by_episode(self, episode_id: int) -> SummaryData:
+    def get_summary_by_episode(self, episode_id: int) -> SummaryResponse:
         response = self.corpus_table.query(
-            KeyConditionExpression=Key("Type").eq("episode") & Key("Id").eq(str(episode_id)),
+            KeyConditionExpression=Key("Type").eq("Episode") & Key("Id").eq(str(episode_id)),
         )
         if len(response["Items"]) == 0:
             raise NotFoundError("Episode not found")
         summary = response["Items"][0]
         return convert_response_to_summary_data(summary)
-

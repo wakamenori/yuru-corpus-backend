@@ -14,5 +14,7 @@ functions:
     name: YuruCorpusApi-${self:service}-${opt:stage, 'dev'}
     environment:
       STAGE: ${opt:stage, 'dev'}
+    tags:
+      service: YuruCorpus
 
 plugins: ${file(../serverless.base.yaml):plugins}
