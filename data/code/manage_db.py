@@ -73,7 +73,15 @@ def add_data(db, table_name, data_dir):
     morphemes_df = morphemes_df.fillna("")
 
     table = db.Table(table_name)
-    morphemes_default_columns = ["Type", "Id", "Speaker", "Token", "TokenKana", "DictionaryForm", "DictionaryFormKana"]
+    morphemes_default_columns = [
+        "Type",
+        "Id",
+        "Speaker",
+        "Token",
+        "TokenKana",
+        "DictionaryForm",
+        "DictionaryFormKana",
+    ]
     for default_column in morphemes_default_columns:
         if default_column not in morphemes_df.columns:
             morphemes_df[default_column] = np.NAN
@@ -93,7 +101,15 @@ def add_data(db, table_name, data_dir):
                 }
             )
 
-        def write(morpheme_id, token, speaker, token_kana, dictionary_form, dictionary_form_kana, pbar):
+        def write(
+                morpheme_id,
+                token,
+                speaker,
+                token_kana,
+                dictionary_form,
+                dictionary_form_kana,
+                pbar,
+        ):
             pbar.update(1)
             if morpheme_id == "1#00:00:00#0":
                 return
@@ -102,7 +118,7 @@ def add_data(db, table_name, data_dir):
                 "Type": "Morpheme",
                 "Id": str(morpheme_id),
                 "Token": str(token),
-                "Speaker": str(speaker) if not pd.isna(speaker) else ""
+                "Speaker": str(speaker) if not pd.isna(speaker) else "",
             }
             if not pd.isna(token_kana):
                 item["TokenKana"] = token_kana
@@ -110,7 +126,11 @@ def add_data(db, table_name, data_dir):
                 item["DictionaryForm"] = dictionary_form
             if not pd.isna(dictionary_form_kana):
                 item["DictionaryFormKana"] = dictionary_form_kana
-            batch.put_item(Item=item)
+            try:
+                batch.put_item(Item=item)
+            except Exception:
+                print("##############################")
+                print(item)
 
         with tqdm(total=len(morphemes_df)) as progress_bar:
             np.vectorize(write)(
@@ -120,7 +140,7 @@ def add_data(db, table_name, data_dir):
                 morphemes_df["TokenKana"],
                 morphemes_df["DictionaryForm"],
                 morphemes_df["DictionaryFormKana"],
-                progress_bar
+                progress_bar,
             )
 
 
