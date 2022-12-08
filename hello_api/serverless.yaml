@@ -1,6 +1,6 @@
 service: hello
 
-frameworkVersion: ${file(../serverless.base.yaml):frameworkVersion}
+frameworkversion: ${file(../serverless.base.yaml):frameworkversion}
 
 custom: ${file(../serverless.base.yaml):custom}
 
@@ -11,8 +11,8 @@ resources: ${file(../serverless.base.yaml):resources}
 functions:
   api:
     handler: wsgi_handler.handler
-    name: YuruCorpusApi-${self:service}-${opt:stage, 'dev'}
+    name: yurucorpusapi-${self:service}-${opt:stage, 'dev'}
     environment:
-      STAGE: ${opt:stage, 'dev'}
+      stage: ${opt:stage, 'dev'}
 
 plugins: ${file(../serverless.base.yaml):plugins}

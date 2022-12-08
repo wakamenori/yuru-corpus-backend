@@ -1,5 +1,6 @@
 import os
 from typing import List, Literal, Optional, TypedDict
+import json
 
 import boto3
 from boto3.dynamodb.conditions import Key
@@ -80,6 +81,17 @@ class Model:
         response = self.corpus_table.put_item(Item=items)
         return response
 
+    def _sync_json_with_db(self, episode_id: int):
+        """sync json file in s3 bucket"""
+        s3 = boto3.resource("s3")
+        bucket = s3.Bucket(f"yuru-corpus-{STAGE}")
+        obj = bucket.Object(f"{episode_id}.json")
+        data = self.corpus_table.query(
+            KeyConditionExpression=Key("Type").eq("Morpheme") & Key("Id").begins_with(f"{episode_id}#"),
+        )["Items"]
+        data = [{"Token": item["Token"], "Speaker": item["Speaker"], "Timestamp": item["Id"].split("#")[1]} for item in data]
+        obj.put(Body=json.dumps(data))
+
     def get_morpheme(self, episode_id, timestamp: Optional[str] = None) -> List[MorphemeResponse]:
         if timestamp is None:
             response = self.corpus_table.query(
@@ -110,12 +122,14 @@ class Model:
         if self._is_morpheme_exist(episode_id, data["timestamp"]):
             raise AlreadyExistsError("Morpheme already exists")
         response = self._update_item(episode_id, data)
+        self._sync_json_with_db(episode_id)
         return response
 
     def put_morpheme(self, episode_id: int, data: MorphemeRequest):
         if not self._is_morpheme_exist(episode_id, data["timestamp"]):
             raise NotFoundError("Morpheme not found")
         response = self._update_item(episode_id, data)
+        self._sync_json_with_db(episode_id)
         return response
 
     def delete_morpheme(self, episode_id: int, timestamp: str):
@@ -128,6 +142,7 @@ class Model:
                 ConditionExpression="attribute_exists(#PK) AND attribute_exists(Id)",
                 ExpressionAttributeNames={"#PK": "Type"},
             )
+            self._sync_json_with_db(episode_id)
             return response
         except ClientError as e:
             if e.response['Error']['Code'] == 'ConditionalCheckFailedException':
