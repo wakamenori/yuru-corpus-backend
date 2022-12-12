@@ -344,3 +344,6 @@ pip-selfcheck.json
 .ionide
 
 # End of https://www.toptal.com/developers/gitignore/api/macos,venv,pycharm,visualstudiocode,python
+
+# npm dependency
+node_modules
