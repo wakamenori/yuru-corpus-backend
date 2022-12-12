@@ -3,6 +3,10 @@
     "version": "1.0.0",
     "description": "Environment to develop serverless applications",
     "author": "",
+    "scripts": {
+        "deploy_apigw": "cd api-gateway && sls deploy",
+        "deploy_api": "cd $npm_config_apiname && sls deploy"
+    },
     "devDependencies": {
         "serverless": "^3.2.1",
         "serverless-cloudformation-sub-variables": "^0.2.1",
