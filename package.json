@@ -5,11 +5,11 @@
     "author": "",
     "devDependencies": {
         "serverless": "^3.2.1",
+        "serverless-cloudformation-sub-variables": "^0.2.1",
         "serverless-python-requirements": "^5.1.0",
         "serverless-wsgi": "^3.0.1"
     },
     "dependencies": {
-        "serverless-cloudformation-sub-variables": "^0.2.1",
         "serverless-offline": "^11.1.3"
     }
 }
