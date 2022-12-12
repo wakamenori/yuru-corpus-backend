@@ -59,7 +59,8 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: 16
-      - name: install-dependency
+          cache: 'npm'
+      - name: install dependency
         run: npm ci
       - name: deploy api gateway
         if: contains(needs.test-python.outputs.changed-files, 'api-gateway/')
