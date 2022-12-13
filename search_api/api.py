@@ -58,7 +58,9 @@ def main():
                     }
                 )
         if len(matched) != 0:
-            results.append({"episodeId": obj.key.split(".")[0], "utterances": matched})
+            results.append(
+                {"episodeId": obj.key.split(".")[0], "utterances": matched}
+            )
 
     return rh.response_2xx({"result": results}, 200)
 
