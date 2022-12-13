@@ -7,6 +7,7 @@ from flask_log_request_id import RequestID
 from logs import ResponseHandler
 from models import Model, NotFoundError
 
+
 app = Flask(__name__)
 CORS(app, supports_credentials=True)
 RequestID(app)
