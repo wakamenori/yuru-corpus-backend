@@ -16,8 +16,8 @@ provider:
       statements:
         - Effect: Allow
           Action:
-            - 's3:List*'
             - 's3:Get*'
+            - 's3:List*'
           Resource:
             - "arn:aws:s3:::yuru-corpus-prod"
             - "arn:aws:s3:::yuru-corpus-dev"
@@ -28,6 +28,7 @@ resources: ${file(../serverless.base.yaml):resources}
 functions:
   api:
     handler: wsgi_handler.handler
+    timeout: 60
     name: YuruCorpusApi-${self:service}-${opt:stage, 'dev'}
     environment:
       STAGE: ${opt:stage, 'dev'}
