@@ -16,7 +16,8 @@ provider:
       statements:
         - Effect: Allow
           Action:
-            - 's3:*'
+            - 's3:Get*'
+            - 's3:List*'
           Resource:
             - "arn:aws:s3:::yuru-corpus-prod"
             - "arn:aws:s3:::yuru-corpus-dev"
