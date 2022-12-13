@@ -4,7 +4,6 @@ import flask
 from flask import Flask
 from flask_cors import CORS
 from flask_log_request_id import RequestID
-
 from logs import ResponseHandler
 from models import Model, NotFoundError
 
