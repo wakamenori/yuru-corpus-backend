@@ -1,6 +1,6 @@
 service: hello
 
-frameworkversion: ${file(../serverless.base.yaml):frameworkversion}
+# frameworkversion: ${file(../serverless.base.yaml):frameworkversion}
 
 custom: ${file(../serverless.base.yaml):custom}
 
