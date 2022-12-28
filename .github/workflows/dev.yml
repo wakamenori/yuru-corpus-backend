@@ -7,7 +7,7 @@ on:
 
 jobs:
   test-python:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     outputs:
       changed-files: ${{steps.changed-files.outputs.all_changed_and_modified_files}}
     env:
@@ -17,10 +17,10 @@ jobs:
       - uses: actions/checkout@v2
         with:
           fetch-depth: 2
-      - name: Set up Python 3.8
+      - name: Set up Python 3.9
         uses: actions/setup-python@v2
         with:
-          python-version: "3.8"
+          python-version: "3.9"
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
@@ -50,32 +50,29 @@ jobs:
 
   deploy-services:
     needs: test-python
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     env:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
     steps:
       - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
       - uses: actions/setup-node@v3
         with:
           node-version: 16
-      - run: npm install -g serverless
-      - run: npm install -g serverless-python-requirements
-      - run: npm install -g serverless-wsgi
-      - run: npm install -g serverless-cloudformation-sub-variables
+          cache: 'npm'
+      - name: install dependency
+        run: npm ci
       - name: deploy api gateway
         if: contains(needs.test-python.outputs.changed-files, 'api-gateway/')
-        run: |
-          cd api-gateway
-          sls deploy
-          cd ..
+        run: npm run deploy_apigw
       - name: deploy apis
         run: |
           lambdas=($(ls | grep _api))
           for lambda in ${lambdas[@]}; do
             if [[ "${{needs.test-python.outputs.changed-files}}" =~ "$lambda" ]]; then
-              cd ${lambda}
-              sls deploy
-              cd ..
+              npm run deploy_api --apiname=${lambda}
             fi
           done
