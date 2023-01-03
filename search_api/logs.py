@@ -36,7 +36,6 @@ json_formatter = jsonlogger.JsonFormatter(
     json_ensure_ascii=False,
 )
 json_formatter.converter = custom_time
-
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 logger.propagate = False
