@@ -1,13 +1,13 @@
 import json
 import os
 import re
-from typing import TypedDict, List
+from typing import List, TypedDict
 
+import boto3
 import flask
 from flask import Flask, request
 from flask_cors import CORS
 from flask_log_request_id import RequestID
-import boto3
 from logs import ResponseHandler
 
 app = Flask(__name__)
@@ -59,7 +59,7 @@ def main():
                 )
         if len(matched) != 0:
             results.append(
-                {"episodeId": obj.key.split(".")[0], "utterances": matched}
+                {"episodeId": int(obj.key.split(".")[0]), "utterances": matched}
             )
 
     return rh.response_2xx({"result": results}, 200)
