@@ -77,9 +77,6 @@ class Model:
             KeyConditionExpression=Key("Type").eq("Episode"),
         )
         data = [convert_response_to_summary_data(summary) for summary in response["Items"]]
-        for ep in data:
-            if ep["channel"] == "ゆる言語学ラジオ":
-                print(ep["id"])
         return sorted(data, key=lambda x: x["publicationDate"], reverse=False)
 
     def get_summary_by_episode(self, episode_id: int) -> SummaryResponse:
