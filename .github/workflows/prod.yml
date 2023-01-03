@@ -72,7 +72,7 @@ jobs:
         run: |
           lambdas=($(ls | grep _api))
           for lambda in ${lambdas[@]}; do
-            if [ "${{needs.test-python.outputs.changed-files}}" =~ "$lambda" ]; then
+            if [[ "${{needs.test-python.outputs.changed-files}}" =~ "$lambda" ]]; then
               npm run deploy_api_prod --apiname=${lambda}
             fi
           done

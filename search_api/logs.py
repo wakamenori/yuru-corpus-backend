@@ -53,7 +53,6 @@ else:
 
 request_filter = ContextualFilter()
 logger.addFilter(request_filter)
-
 logg_level_4xx = Literal["WARNING", "ERROR"]
 
 
