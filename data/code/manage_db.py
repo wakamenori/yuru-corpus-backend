@@ -1,5 +1,4 @@
 import argparse
-import os
 
 import boto3
 import numpy as np
@@ -74,7 +73,7 @@ def add_data(db, table_name, summary_path=None, morphemes_path=None):
             summary = pd.read_csv(summary_path)
             summary = summary.fillna("")
             for episode in tqdm(summary.itertuples(), total=len(summary)):
-                batch.put_item(
+                response = batch.put_item(
                     Item={
                         "Type": "Episode",
                         "Id": str(episode.Id),
@@ -114,9 +113,10 @@ def add_data(db, table_name, summary_path=None, morphemes_path=None):
                 item["DictionaryFormKana"] = dictionary_form_kana
             try:
                 batch.put_item(Item=item)
-            except Exception:
+            except Exception as e:
                 print("##############################")
                 print(item)
+                print(e)
 
         if morphemes_path is not None:
             morphemes_df = pd.read_csv(morphemes_path)
