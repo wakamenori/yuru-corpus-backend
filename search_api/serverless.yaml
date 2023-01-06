@@ -2,7 +2,9 @@ service: search
 
 frameworkVersion: ${file(../serverless.base.yaml):frameworkVersion}
 
-custom: ${file(../serverless.base.yaml):custom}
+custom:
+  wsgi:
+    app: api.app
 
 provider:
   name: aws
@@ -22,13 +24,19 @@ provider:
             - "arn:aws:s3:::yuru-corpus-prod"
             - "arn:aws:s3:::yuru-corpus-dev"
             - "arn:aws:s3:::yuru-corpus-test"
+        - Effect: Allow
+          Action:
+            - "aoss:*"
+          Resource:
+            - "*"
+            - "arn:aws:aoss:ap-northeast-1:993796475327:domain/rkoy8np550ngxdqc1u4l.ap-northeast-1.aoss.amazonaws.com/*"
+            - "arn:aws:aoss:ap-northeast-1:993796475327:collection/rkoy8np550ngxdqc1u4l"
 
 resources: ${file(../serverless.base.yaml):resources}
 
 functions:
   api:
     handler: wsgi_handler.handler
-    timeout: 60
     name: YuruCorpusApi-${self:service}-${opt:stage, 'dev'}
     environment:
       STAGE: ${opt:stage, 'dev'}
