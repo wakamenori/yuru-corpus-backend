@@ -80,7 +80,7 @@ class ResponseHandler:
         query = {k: v for k, v in query.items()}
         log = {
             "message": message,
-            "execution_time": execution_time.microseconds / 1000000,
+            "execution_time": execution_time.total_seconds(),
             "query": query,
         }
         if log_level == "WARNING":
@@ -99,8 +99,9 @@ class ResponseHandler:
         logger.info(
             {
                 "message": "Successfully executed",
-                "execution_time": execution_time.microseconds / 1000000,
+                "execution_time": execution_time.total_seconds(),
                 "status": status_code,
             }
         )
         return jsonify(data), status_code
+

@@ -1,6 +1,7 @@
 # Created by https://www.toptal.com/developers/gitignore/api/macos,venv,pycharm,visualstudiocode,python
 # Edit at https://www.toptal.com/developers/gitignore?templates=macos,venv,pycharm,visualstudiocode,python
 
+.virtual_documents/
 .serverless/
 data/text/*
 
