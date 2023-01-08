@@ -122,14 +122,14 @@ class Model:
         if self._is_morpheme_exist(episode_id, data["timestamp"]):
             raise AlreadyExistsError("Morpheme already exists")
         response = self._update_item(episode_id, data)
-        self._sync_json_with_db(episode_id)
+        # self._sync_json_with_db(episode_id)
         return response
 
     def put_morpheme(self, episode_id: int, data: MorphemeRequest):
         if not self._is_morpheme_exist(episode_id, data["timestamp"]):
             raise NotFoundError("Morpheme not found")
         response = self._update_item(episode_id, data)
-        self._sync_json_with_db(episode_id)
+        # self._sync_json_with_db(episode_id)
         return response
 
     def delete_morpheme(self, episode_id: int, timestamp: str):
@@ -142,7 +142,7 @@ class Model:
                 ConditionExpression="attribute_exists(#PK) AND attribute_exists(Id)",
                 ExpressionAttributeNames={"#PK": "Type"},
             )
-            self._sync_json_with_db(episode_id)
+            # self._sync_json_with_db(episode_id)
             return response
         except ClientError as e:
             if e.response['Error']['Code'] == 'ConditionalCheckFailedException':
